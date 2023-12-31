@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MediaWiki Project</title>
+  <!-- Add Teko font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Custom styles to imitate Wikipedia layout */
+    body, html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://www.sdccd.edu/about/departments-and-offices/institutional-innovation-effectiveness/images/innovation2.png');
+      /* Use the URL representing the merged image here */
+      background-size: cover;
+      font-family: 'Teko', sans-serif;
+      color: #202124;
+      font-size: 18px;
+    }
+    .header {
+      position: relative;
+      background-image: url('');
+      background-size: cover;
+      background-position: center;
+      padding: 20px;
+      text-align: center;
+      color: #e7e4ef;
+      font-size: 32px;
+    }
+    .search-bar {
+      width: 100%;
+      padding: 0 20%;
+    }
+    .top-left-controls {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      margin-left: 20px;
+    }
+    .home-link {
+      color: #f6f6f6;
+      text-decoration: none;
+      font-size: 18px;
+      margin-right: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .top-right-controls {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .form-group {
+      margin-bottom: 0;
+    }
+    .form-control {
+      background-color: #f5f6f9;
+      border: 1px solid #1d1e21;
+      color: #202124;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 16px;
+      outline: none;
+    }
+    .medium-label {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+    #searchBtn {
+      background-color: #1559e1;
+      border: 1px solid #000000;
+      color: #ffffff;
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      outline: none;
+      cursor: pointer;
+    }
+    #searchBtn:hover {
+      background-color: #0f4dbf;
+      border-color: #080808;
+    }
+    .main-content {
+      padding: 20px;
+      min-height: calc(100vh - 160px);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: flex-start;
+    }
+    .content {
+      background-color: rgba(232, 235, 242, 0.9);
+      width: 45%;
+      padding: 20px;
+      margin: 10px 0;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .thumbnail {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    .extended-info {
+      color: #1559e1;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 10px;
+    }
+    .extended-content {
+      display: none;
+      background-image: url(''); /* Replace with your image URL */
+      background-size: cover;
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .extended-content p {
+      color: #fff;
+    }
+    /* Additional styles for the paint brush icon */
+    .color-picker-container {
+      display: flex;
+      align-items: center;
+    }
+    .color-picker-icon {
+      margin-right: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .extended-content {
+      display: none;
+      background-image: url('URL_OF_FIRST_IMAGE'), url('URL_OF_SECOND_IMAGE');
+      background-size: cover;
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="top-left-controls">
+      <a href="https://your-main-website.com" class="home-link" onclick="returnToHome()">Home</a>
+    </div>
+    <h1>PROJECT MEDIAWIKI</h1>
+    <div class="top-right-controls">
+      <div class="form-group">
+        <label for="colorPicker" class="medium-label">Font Color:</label>
+        <div class="color-picker-container">
+          <span class="color-picker-icon" onclick="toggleColorPicker()">🎨</span>
+          <input type="color" id="colorPicker" class="form-control" style="display: none;" onchange="changeFontColor()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="fontSize" class="medium-label">Font Size:</label>
+        <input type="number" id="fontSize" class="form-control" min="10" max="40" step="1" value="16">
+      </div>
+    </div>
+    <div class="search-bar">
+      <div class="form-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search Wikipedia">
+        <button class="btn" id="searchBtn" type="button" aria-label="Search Wikipedia">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content" id="results">
+    <!-- Your previous main content -->
+  </div>
+
+  <script>
+    function searchWikipedia() {
+      const searchTerm = document.getElementById('searchInput').value;
+      fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts|pageimages&exintro=&explaintext=&pithumbsize=300&generator=search&gsrsearch=${searchTerm}&gsrlimit=5&origin=*`)
+        .then(response => response.json())
+        .then(data => {
+          displayResults(data);
+        })
+        .catch(error => console.log(error));
+    }
+
+    function displayResults(data) {
+      const pages = data.query.pages;
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      let hasResults = false;
+
+      for (const pageId in pages) {
+        const page = pages[pageId];
+        const extract = page.extract;
+        const imageUrl = page.thumbnail ? page.thumbnail.source : null;
+        const title = page.title;
+
+        if (extract) {
+          resultsDiv.innerHTML += `
+            <div class="content">
+              <img src="${imageUrl}" class="thumbnail" alt="Thumbnail">
+              <h3>${title}</h3>
+              <p>${extract}</p>
+              <p class="extended-info">More Information</p>
+              <div class="extended-content" style="display: none;">
+                ${imageUrl ? `<img src="${imageUrl}" alt="Extended Information Image" class="thumbnail">` : ''}
+                <p>
+                  Extended Information: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vitae justo eu augue suscipit ultrices. Donec sodales aliquam mi, eu maximus tellus dignissim a. Cras a odio sed arcu fermentum efficitur sed id nunc. Sed in mollis orci. Fusce in risus sed elit consequat rhoncus. Integer quis justo ac purus efficitur efficitur. Ut vitae rhoncus sapien, vel suscipit nunc.
+                </p>
+              </div>
+            </div>
+          `;
+          hasResults = true;
+        }
+      }
+
+      if (!hasResults) {
+        resultsDiv.innerHTML = '<p>No information found. Please try another search term or check your spelling.</p>';
+      }
+    }
+
+    // Rest of your JavaScript code
+    document.getElementById('searchBtn').addEventListener('click', function() {
+      searchWikipedia();
+    });
+
+    document.getElementById('searchInput').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        searchWikipedia();
+      }
+    });
+
+    document.getElementById('fontSize').addEventListener('input', function() {
+      const fontSize = document.getElementById('fontSize').value + 'px';
+      document.querySelectorAll('.content').forEach(content => {
+        content.style.fontSize = fontSize;
+      });
+    });
+
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('extended-info')) {
+        const extendedContent = event.target.nextElementSibling;
+        if (extendedContent.style.display === 'none') {
+          extendedContent.style.display = 'block';
+          event.target.style.display = 'none';
+        }
+      }
+    });
+
+    function toggleColorPicker() {
+      const colorPicker = document.getElementById('colorPicker');
+      colorPicker.style.display = colorPicker.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function changeFontColor() {
+      const color = document.getElementById('colorPicker').value;
+      document.querySelectorAll('.content').forEach(content => {
+        content.style.color = color;
+      });
+    }
+  </script>
+</body>
+</html>
